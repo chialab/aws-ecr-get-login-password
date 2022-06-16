@@ -1,0 +1,59 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Run linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Linter
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.42
+          skip-go-installation: true
+
+  # unit:
+  #   strategy:
+  #     matrix:
+  #       os: [ ubuntu-latest, macOS-latest ]
+
+  #   name: Run unit tests on ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   timeout-minutes: 5
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 2
+
+  #     - name: Set up Go
+  #       uses: actions/setup-go@v2
+  #       with:
+  #         go-version: 1.18
+
+  #     - name: Build
+  #       run: go build -v ./...
+
+  #     - name: Test
+  #       run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+  #       timeout-minutes: 1
+
+  #     - name: Upload coverage to Codecov
+  #       run: bash <(curl -s https://codecov.io/bash)
+  #       env:
+  #         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  #       timeout-minutes: 1
