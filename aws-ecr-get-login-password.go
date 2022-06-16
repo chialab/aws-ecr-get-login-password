@@ -1,23 +1,26 @@
 package main
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ecr"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/ecr"
 )
 
 func main() {
 	os.Setenv("AWS_SDK_LOAD_CONFIG", "1")
-	sess := session.Must(session.NewSession())
-	svc := ecr.New(sess)
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	input := &ecr.GetAuthorizationTokenInput{}
-	token, err := svc.GetAuthorizationToken(input)
+	svc := ecr.NewFromConfig(cfg)
+	token, err := svc.GetAuthorizationToken(context.TODO(), &ecr.GetAuthorizationTokenInput{})
 	if err != nil {
 		log.Fatal(err)
 	}
