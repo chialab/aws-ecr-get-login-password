@@ -1,25 +1,37 @@
-name: Go
+name: Build
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags: [ v* ]
 
 jobs:
-
   build:
+    name: Build and release
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.18
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
 
-    - name: Build
-      run: go build -v ./aws-ecr-get-login-password.go
+      - name: Build
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o build/aws-ecr-get-login-password-linux-amd64 -v main.go
+          GOOS=linux GOARCH=arm64 go build -o build/aws-ecr-get-login-password-linux-arm64 -v main.go
+          GOOS=darwin GOARCH=amd64 go build -o build/aws-ecr-get-login-password-darwin-amd64 -v main.go
+          GOOS=darwin GOARCH=arm64 go build -o build/aws-ecr-get-login-password-darwin-arm64 -v main.go
 
-    - name: Test
-      run: go test -v ./aws-ecr-get-login-password.go
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            build/aws-ecr-get-login-password-linux-amd64
+            build/aws-ecr-get-login-password-linux-arm64
+            build/aws-ecr-get-login-password-darwin-amd64
+            build/aws-ecr-get-login-password-darwin-arm64
