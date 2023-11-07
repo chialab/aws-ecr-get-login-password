@@ -9,9 +9,17 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      aws:
+        patterns: ['github.com/aws/*']
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      gh-actions:
+        patterns: ['actions/*']
+      github:
+        patterns: ['github/*']
