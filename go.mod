@@ -1,6 +1,6 @@
 module github.com/chialab/aws-ecr-get-login-password
 
-go 1.20
+go 1.21
 
 require (
 	github.com/aws/aws-sdk-go-v2/config v1.22.1
