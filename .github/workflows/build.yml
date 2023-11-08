@@ -21,8 +21,8 @@ jobs:
 
       - name: Build
         run: |
-          GOOS=linux GOARCH=amd64 go build -o build/aws-ecr-get-login-password-linux-amd64 -v main.go
-          GOOS=linux GOARCH=arm64 go build -o build/aws-ecr-get-login-password-linux-arm64 -v main.go
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o build/aws-ecr-get-login-password-linux-amd64 -v main.go
+          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o build/aws-ecr-get-login-password-linux-arm64 -v main.go
           GOOS=darwin GOARCH=amd64 go build -o build/aws-ecr-get-login-password-darwin-amd64 -v main.go
           GOOS=darwin GOARCH=arm64 go build -o build/aws-ecr-get-login-password-darwin-arm64 -v main.go
 
