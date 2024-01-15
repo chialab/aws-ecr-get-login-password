@@ -24,7 +24,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Run snapshot action
-        uses: actions/go-dependency-submission@v1
+        uses: actions/go-dependency-submission@v2
         with:
           go-mod-path: go.mod
           go-build-target: main.go
