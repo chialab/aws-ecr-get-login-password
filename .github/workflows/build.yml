@@ -27,7 +27,7 @@ jobs:
           GOOS=darwin GOARCH=arm64 go build -o build/aws-ecr-get-login-password-darwin-arm64 -v main.go
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: |
