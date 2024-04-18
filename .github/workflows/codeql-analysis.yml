@@ -25,6 +25,17 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: go
+          build-mode: manual
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        run: go build -v ./...
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:go'
