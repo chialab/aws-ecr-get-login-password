@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   lint:
     name: Run linter
@@ -24,8 +28,8 @@ jobs:
         with:
           version: latest
 
-  build:
-    name: Test build succeeds
+  unit:
+    name: Run unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -43,31 +47,10 @@ jobs:
       - name: Build
         run: go build -v ./...
 
-  # unit:
-  #   name: Run unit tests
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 5
+      - name: Test
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 2
-
-  #     - name: Set up Go
-  #       uses: actions/setup-go@v5
-  #       with:
-  #         go-version-file: go.mod
-
-  #     - name: Build
-  #       run: go build -v ./...
-
-  #     - name: Test
-  #       run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
-  #       timeout-minutes: 1
-
-  #     - name: Upload coverage to Codecov
-  #       run: bash <(curl -s https://codecov.io/bash)
-  #       env:
-  #         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  #       timeout-minutes: 1
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          use_oidc: true
