@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   lint:
     name: Run linter
@@ -53,4 +49,4 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
-          use_oidc: true
+          token: ${{ secrets.CODECOV_TOKEN }}
