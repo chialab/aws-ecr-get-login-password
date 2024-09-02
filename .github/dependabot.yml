@@ -5,21 +5,23 @@ version: 2
 updates:
 
   # Maintain dependencies for Go
-  - package-ecosystem: "gomod"
-    directory: "/"
+  - package-ecosystem: 'gomod'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       aws:
-        patterns: ['github.com/aws/*']
+        patterns: [ 'github.com/aws/*' ]
+        ignore:
+          - update-types: [ 'version-update:semver-patch' ]
 
   # Maintain dependencies for GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       gh-actions:
-        patterns: ['actions/*']
+        patterns: [ 'actions/*' ]
       github:
-        patterns: ['github/*']
+        patterns: [ 'github/*' ]
