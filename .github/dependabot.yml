@@ -12,8 +12,8 @@ updates:
     groups:
       aws:
         patterns: [ 'github.com/aws/*' ]
-        ignore:
-          - update-types: [ 'version-update:semver-patch' ]
+    ignore:
+      - update-types: [ 'version-update:semver-patch' ]
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: 'github-actions'
