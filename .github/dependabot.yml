@@ -13,7 +13,8 @@ updates:
       aws:
         patterns: [ 'github.com/aws/*' ]
     ignore:
-      - update-types: [ 'version-update:semver-patch' ]
+      - dependency-name: '*'
+        update-types: [ 'version-update:semver-patch' ]
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: 'github-actions'
