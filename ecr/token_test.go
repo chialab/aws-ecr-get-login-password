@@ -59,13 +59,13 @@ func TestGetAuthData(t *testing.T) {
 			mockECRClient(func(context.Context, *ecr.GetAuthorizationTokenInput, ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error) {
 				return &ecr.GetAuthorizationTokenOutput{AuthorizationData: []types.AuthorizationData{}}, nil
 			}),
-			UnexpectedResponseError,
+			ErrUnexpectedResponse,
 		},
 		"Invalid(AuthorizationDataArrayTooLong)": {
 			mockECRClient(func(context.Context, *ecr.GetAuthorizationTokenInput, ...func(*ecr.Options)) (*ecr.GetAuthorizationTokenOutput, error) {
 				return &ecr.GetAuthorizationTokenOutput{AuthorizationData: []types.AuthorizationData{{AuthorizationToken: ind("Zm9vOmJhcg==")}, {AuthorizationToken: ind("Zm9vOmJhcjpiYXo=")}}}, nil
 			}),
-			UnexpectedResponseError,
+			ErrUnexpectedResponse,
 		},
 	}
 	for name, tt := range fail {
@@ -139,7 +139,7 @@ func TestNewToken(t *testing.T) {
 		},
 		"Invalid(`foo`)": {
 			&types.AuthorizationData{AuthorizationToken: ind("Zm9v"), ExpiresAt: ind(must(time.Parse(time.RFC3339, "2024-04-18T13:18:00Z")))},
-			InvalidTokenError,
+			ErrInvalidToken,
 		},
 	}
 	for name, tt := range fail {

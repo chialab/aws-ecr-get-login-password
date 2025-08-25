@@ -10,11 +10,11 @@ import (
 	"strings"
 )
 
-// InvalidTokenError is returned when token is not in base64-encoded `username:password` format.
-var InvalidTokenError = errors.New("unexpected token format")
+// ErrInvalidToken is returned when token is not in base64-encoded `username:password` format.
+var ErrInvalidToken = errors.New("unexpected token format")
 
-// UnexpectedResponseError is returned when ECR client returns zero or more than one types.AuthorizationData in its response.
-var UnexpectedResponseError = errors.New("unexpected number of authorization data returned")
+// ErrUnexpectedResponse is returned when ECR client returns zero or more than one types.AuthorizationData in its response.
+var ErrUnexpectedResponse = errors.New("unexpected number of authorization data returned")
 
 // Interface required to obtain an ECR authentication token.
 type ecrTokenClient interface {
@@ -35,7 +35,7 @@ func getAuthData(context context.Context, client ecrTokenClient) (*types.Authori
 	if token, err := client.GetAuthorizationToken(context, &ecr.GetAuthorizationTokenInput{}); err != nil {
 		return nil, err
 	} else if len(token.AuthorizationData) != 1 {
-		return nil, UnexpectedResponseError
+		return nil, ErrUnexpectedResponse
 	} else {
 		return &token.AuthorizationData[0], nil
 	}
@@ -54,7 +54,7 @@ func NewToken(authData *types.AuthorizationData) (*AuthorizationToken, error) {
 	if data, err := base64.StdEncoding.DecodeString(token); err != nil {
 		return nil, err
 	} else if parts := strings.SplitN(string(data), ":", 2); len(parts) != 2 {
-		return nil, InvalidTokenError
+		return nil, ErrInvalidToken
 	} else {
 		return &AuthorizationToken{*authData, &parts[0], &parts[1]}, nil
 	}
