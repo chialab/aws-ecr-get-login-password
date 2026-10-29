@@ -28,12 +28,18 @@ func TestRun(t *testing.T) {
 		stdout   string
 		stderr   string
 	}{
-		"Password":       {nil, succeed, 0, "s3cr3t\n", ""},
-		"Error":          {nil, fail, exitFailure, "", "aws-ecr-get-login-password: my error\n"},
-		"Version":        {[]string{"--version"}, fail, 0, "dev\n", ""},
-		"Help":           {[]string{"-h"}, fail, 0, "", "Usage: aws-ecr-get-login-password"},
-		"UnknownFlag":    {[]string{"--region=eu-west-1"}, fail, exitUsage, "", "flag provided but not defined"},
-		"UnexpectedArgs": {[]string{"foo"}, fail, exitUsage, "", "unexpected arguments: [\"foo\"]"},
+		"Password": {nil, succeed, 0, "s3cr3t\n", ""},
+		"Error":    {nil, fail, exitFailure, "", "aws-ecr-get-login-password: my error\n"},
+		"Version":  {[]string{"--version"}, fail, 0, "dev\n", ""},
+		"Help":     {[]string{"-h"}, fail, 0, "", "Usage: aws-ecr-get-login-password"},
+		"UnknownFlag": {
+			[]string{"--region=eu-west-1"},
+			fail, exitUsage, "",
+			"aws-ecr-get-login-password: flag provided but not defined: -region\nUsage:",
+		},
+		"UnexpectedArgs": {
+			[]string{"foo"}, fail, exitUsage, "", "aws-ecr-get-login-password: unexpected arguments: [\"foo\"]\nUsage:",
+		},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {

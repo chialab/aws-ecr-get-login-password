@@ -52,21 +52,23 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer, getToken 
 	var showVersion bool
 
 	flags := flag.NewFlagSet("aws-ecr-get-login-password", flag.ContinueOnError)
-	flags.SetOutput(stderr)
-	flags.Usage = func() { _, _ = fmt.Fprint(flags.Output(), usage) }
+	flags.SetOutput(io.Discard) // errors are reported by warn, with the command name
 	flags.BoolVar(&showVersion, "version", false, "")
 
 	err := flags.Parse(args)
 	if errors.Is(err, flag.ErrHelp) {
+		_, _ = fmt.Fprint(stderr, usage)
+
 		return 0
 	}
 
-	if err != nil {
-		return exitUsage
+	if err == nil && flags.NArg() > 0 {
+		err = fmt.Errorf("%w: %q", errUnexpectedArgs, flags.Args())
 	}
 
-	if flags.NArg() > 0 {
-		warn(stderr, fmt.Errorf("%w: %q", errUnexpectedArgs, flags.Args()))
+	if err != nil {
+		warn(stderr, err)
+		_, _ = fmt.Fprint(stderr, usage)
 
 		return exitUsage
 	}

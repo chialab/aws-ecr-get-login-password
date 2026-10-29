@@ -68,5 +68,8 @@ dockers_v2:
       org.opencontainers.image.revision: "{{ .FullCommit }}"
       org.opencontainers.image.licenses: MIT
 
+release:
+  prerelease: auto # keep -rc/-beta tags out of releases/latest
+
 changelog:
   use: github
