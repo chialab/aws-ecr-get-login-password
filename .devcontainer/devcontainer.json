@@ -1,0 +1,17 @@
+{
+  "name": "aws-ecr-get-login-password",
+  "image": "mcr.microsoft.com/devcontainers/go:1.27-trixie",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "go mod download",
+  "customizations": {
+    "vscode": {
+      "extensions": ["golang.go", "editorconfig.editorconfig"],
+      "settings": {
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": ["--fast-only"]
+      }
+    }
+  }
+}

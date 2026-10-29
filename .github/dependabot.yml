@@ -1,28 +1,32 @@
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
 version: 2
 updates:
-
-  # Maintain dependencies for Go
-  - package-ecosystem: 'gomod'
-    directory: '/'
+  - package-ecosystem: gomod
+    directory: /
     schedule:
-      interval: 'weekly'
+      interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       aws:
-        patterns: [ 'github.com/aws/*' ]
+        patterns: ["github.com/aws/*"]
     ignore:
-      - dependency-name: '*'
-        update-types: [ 'version-update:semver-patch' ]
+      # The AWS SDK publishes patch releases almost daily: minor bumps are enough.
+      - dependency-name: "*"
+        update-types: [version-update:semver-patch]
 
-  # Maintain dependencies for GitHub Actions
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: 'weekly'
+      interval: weekly
+    cooldown:
+      default-days: 7
     groups:
-      gh-actions:
-        patterns: [ 'actions/*' ]
-      github:
-        patterns: [ 'github/*' ]
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

@@ -1,0 +1,52 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! 🐛
+        **Never paste passwords, access keys or session tokens**, and feel free to redact your AWS account ID (use `000000000000`).
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `aws-ecr-get-login-password --version`
+      placeholder: 1.1.0
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: OS and architecture, how you installed it, and whether you run it in Docker
+      placeholder: linux/arm64, copied from the GHCR image into an Alpine image
+    validations:
+      required: true
+  - type: dropdown
+    id: credentials
+    attributes:
+      label: Credentials
+      description: Where do AWS credentials come from?
+      options:
+        - Environment variables (AWS_ACCESS_KEY_ID, ...)
+        - Shared config/credentials files (AWS_PROFILE)
+        - Web identity (EKS IRSA, GitHub OIDC, ...)
+        - ECS task role
+        - EC2 instance profile (IMDS)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+      description: Include the exit code and any `aws-ecr-get-login-password:` messages on stderr.
+    validations:
+      required: true

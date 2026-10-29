@@ -1,0 +1,2 @@
+# Always LF, also on Windows checkouts (autocrlf breaks `go mod tidy -diff` and gofmt checks).
+* text=auto eol=lf

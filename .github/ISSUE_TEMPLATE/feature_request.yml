@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an idea or an improvement
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make `aws-ecr-get-login-password` better! 💡
+        Keep in mind that this tool does one thing on purpose: printing the ECR login password.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe your use case; it matters more than the proposed solution.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like it to work? An example command line helps a lot.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

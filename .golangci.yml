@@ -1,0 +1,40 @@
+version: "2"
+
+linters:
+  default: all
+  disable:
+    - exhaustruct # deprecated, superseded by exhaustruct_v5 (disabled below)
+    - exhaustruct_v5 # zero values are meaningful in Go; partial literals are intended
+    - gomodguard # deprecated; depguard (below) already restricts dependencies
+    - wsl # deprecated, superseded by wsl_v5 (enabled)
+
+  settings:
+    varnamelen:
+      ignore-names: [tt] # idiomatic name for table-driven test cases
+    depguard:
+      rules:
+        main:
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/aws/aws-sdk-go-v2
+            - github.com/chialab/aws-ecr-get-login-password
+            - golang.org/x/crypto/x509roots/fallback
+
+  exclusions:
+    rules:
+      # Repeated literals in test tables are clearer inline than as constants.
+      - path: _test\.go
+        linters: [goconst]
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+
+  settings:
+    golines:
+      max-len: 120

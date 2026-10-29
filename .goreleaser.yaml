@@ -1,0 +1,75 @@
+version: 2
+
+project_name: aws-ecr-get-login-password
+
+before:
+  hooks:
+    - go test ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64, arm]
+    goarm: ["7"]
+    ignore:
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - # plain binaries, named as before GoReleaser: releases/latest/download/<name> URLs keep working
+    id: binaries
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}"
+    formats: [binary]
+  - # same names plus extension; no version in the name, so the URL is stable too
+    id: archives
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+nfpms:
+  - # same stable naming as the binaries; the extension is added per format
+    file_name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}{{ with .Arm }}v{{ . }}{{ end }}"
+    formats: [deb, rpm, apk]
+    bindir: /usr/bin # same path as in the Docker image
+    vendor: Chialab srl
+    maintainer: Chialab srl <dev@chialab.it>
+    homepage: https://github.com/chialab/aws-ecr-get-login-password
+    description: Prints an Amazon ECR login password, like `aws ecr get-login-password`.
+    license: MIT
+    contents:
+      - src: LICENSE # MIT requires the notice to ship with every copy
+        dst: /usr/share/doc/aws-ecr-get-login-password/LICENSE
+
+checksum:
+  name_template: checksums.txt
+
+dockers_v2:
+  - images:
+      - ghcr.io/chialab/aws-ecr-get-login-password
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .Prerelease }}latest{{ end }}"
+    platforms:
+      - linux/amd64
+      - linux/arm64
+      - linux/arm/v7
+    labels:
+      org.opencontainers.image.source: "{{ .GitURL }}"
+      org.opencontainers.image.version: "{{ .Version }}"
+      org.opencontainers.image.revision: "{{ .FullCommit }}"
+      org.opencontainers.image.licenses: MIT
+
+release:
+  prerelease: auto # keep -rc/-beta tags out of releases/latest
+
+changelog:
+  use: github
