@@ -9,7 +9,7 @@ User-facing docs live in [README.md](README.md); contribution rules in [CONTRIBU
 - `ecr/token.go`: importable package. Public API: `GetToken`, `NewToken`, `AuthorizationToken`, `ErrInvalidToken`, `ErrUnexpectedResponse`. The `ecrTokenClient` interface exists to mock the ECR client in tests.
 - `main_test.go`, `ecr/token_internal_test.go`: table-driven tests, all `t.Parallel()`, never calling AWS.
 - `.goreleaser.yaml` + `Dockerfile`: release of plain binaries and tar.gz/zip archives (linux/darwin/windows, amd64/arm64, linux/arm/v7), Linux packages (deb/rpm/apk, attached to the release only) and the multi-arch `FROM scratch` image on GHCR.
-- `.github/workflows/`: `ci.yml` (test matrix with `-race` and Codecov, golangci-lint, govulncheck, zizmor), `release.yml` (GoReleaser on `v*` tags, with attestations), `codeql-analysis.yml`, `dependency-submission.yml`.
+- `.github/workflows/`: `ci.yml` (test matrix with `-race` and Codecov, golangci-lint, govulncheck, zizmor), `release.yml` (GoReleaser on `v*` tags, with attestations). CodeQL runs through the repository's default setup, not a workflow.
 
 ## Commands
 
