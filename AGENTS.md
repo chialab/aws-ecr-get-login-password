@@ -9,7 +9,8 @@ User-facing docs live in [README.md](README.md); contribution rules in [CONTRIBU
 - `ecr/token.go`: importable package. Public API: `GetToken`, `NewToken`, `AuthorizationToken`, `ErrInvalidToken`, `ErrUnexpectedResponse`. The `ecrTokenClient` interface exists to mock the ECR client in tests.
 - `main_test.go`, `ecr/token_internal_test.go`: table-driven tests, all `t.Parallel()`, never calling AWS.
 - `.goreleaser.yaml` + `Dockerfile`: release of plain binaries and tar.gz/zip archives (linux/darwin/windows, amd64/arm64, linux/arm/v7), Linux packages (deb/rpm/apk, attached to the release only) and the multi-arch `FROM scratch` image on GHCR.
-- `.github/workflows/`: `ci.yml` (test matrix with `-race` and Codecov, golangci-lint, govulncheck, zizmor), `release.yml` (GoReleaser on `v*` tags, with attestations). CodeQL runs through the repository's default setup, not a workflow.
+- `docker-buildx-ecr/`: the `ghcr.io/chialab/docker-buildx-ecr` image (formerly its own repository), i.e. `docker:<version>-cli` plus the binary copied from our image into `/usr/local/bin`. Not built by GoReleaser: its tags follow the Docker version (`X.Y.Z`, `X.Y`, `X`, `latest`, `main`), and Dependabot bumps both `FROM` lines. The base is `docker:X.Y-cli` on purpose: the workflow pins it to a digest, reads `X.Y.Z` from its `DOCKER_VERSION`, and rebuilds weekly to pick up patch releases.
+- `.github/workflows/`: `ci.yml` (test matrix with `-race` and Codecov, golangci-lint, govulncheck, zizmor), `release.yml` (GoReleaser on `v*` tags, with attestations), `docker-buildx-ecr.yml` (builds that image on changes to its folder, pushes and attests it from `main` and weekly). CodeQL runs through the repository's default setup, not a workflow.
 
 ## Commands
 

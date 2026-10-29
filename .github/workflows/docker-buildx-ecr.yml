@@ -1,0 +1,90 @@
+name: docker-buildx-ecr
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docker-buildx-ecr/**
+      - .github/workflows/docker-buildx-ecr.yml
+  pull_request:
+    paths:
+      - docker-buildx-ecr/**
+      - .github/workflows/docker-buildx-ecr.yml
+  schedule:
+    - cron: "0 4 * * 1" # weekly: Docker patch releases and base image fixes
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  image:
+    name: image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write # ghcr.io
+      id-token: write # sign attestations (Sigstore OIDC)
+      attestations: write # store attestations
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@v4
+      - name: Resolve Docker image
+        id: docker
+        # Pin the floating docker:X.Y-cli tag to a digest, so the X.Y.Z tag matches what is built.
+        run: |
+          image=$(sed -n 's/^FROM \(docker:[0-9.]*-cli\)$/\1/p' docker-buildx-ecr/Dockerfile)
+          test -n "${image}"
+          digest=$(docker buildx imagetools inspect "${image}" --format '{{json .Manifest.Digest}}' | jq -r .)
+          version=$(docker buildx imagetools inspect "${image}@${digest}" --format '{{json .Image}}' \
+            | jq -r '.["linux/amd64"].config.Env[] | select(startswith("DOCKER_VERSION=")) | ltrimstr("DOCKER_VERSION=")')
+          test -n "${version}"
+          {
+            echo "image=${image}"
+            echo "digest=${digest}"
+            echo "version=${version}"
+          } >> "$GITHUB_OUTPUT"
+      - uses: docker/metadata-action@v6
+        id: meta
+        with:
+          images: ghcr.io/chialab/docker-buildx-ecr
+          flavor: latest=false
+          # same tags as the former chialab/docker-buildx-ecr repository
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.docker.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.docker.outputs.version }}
+            type=semver,pattern={{major}},value=${{ steps.docker.outputs.version }}
+            type=raw,value=latest
+            type=raw,value=main
+          labels: |
+            org.opencontainers.image.title=docker-buildx-ecr
+            org.opencontainers.image.description=The official Docker CLI image, plus aws-ecr-get-login-password.
+            org.opencontainers.image.version=${{ steps.docker.outputs.version }}
+      - uses: docker/login-action@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        id: build
+        with:
+          context: docker-buildx-ecr
+          build-contexts: ${{ steps.docker.outputs.image }}=docker-image://${{ steps.docker.outputs.image }}@${{ steps.docker.outputs.digest }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Attest image
+        if: github.ref == 'refs/heads/main'
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: ghcr.io/chialab/docker-buildx-ecr
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
