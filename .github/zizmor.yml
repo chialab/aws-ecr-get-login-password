@@ -1,0 +1,6 @@
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # Major tags on purpose: SHA pins are not worth the maintenance here.
+        "*": ref-pin
