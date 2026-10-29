@@ -24,6 +24,15 @@ updates:
       actions:
         patterns: ["*"]
 
+  - # docker-buildx-ecr: both the Docker CLI base image and our own binary image
+    package-ecosystem: docker
+    directory: /docker-buildx-ecr
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+      exclude: ["ghcr.io/chialab/aws-ecr-get-login-password"] # our own releases, no reason to wait
+
   - package-ecosystem: devcontainers
     directory: /
     schedule:

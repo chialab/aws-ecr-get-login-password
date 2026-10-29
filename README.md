@@ -29,6 +29,8 @@ Copy it into your own image: Docker picks the right architecture automatically.
 COPY --from=ghcr.io/chialab/aws-ecr-get-login-password:latest /usr/bin/aws-ecr-get-login-password /usr/bin/aws-ecr-get-login-password
 ```
 
+For CI/CD pipelines, [`ghcr.io/chialab/docker-buildx-ecr`](docker-buildx-ecr/README.md) is a handy Docker CLI image with the binary already installed.
+
 ### Linux packages
 
 `.deb`, `.rpm` and `.apk` packages for `amd64`, `arm64` and `armv7` are attached to each release, and install the binary in `/usr/bin`.
